@@ -7,7 +7,6 @@ internal data class FetchRange(
     val current: Period,
     val next: Period
 ) {
-
     val periods: List<Period> = listOf(previous, current, next)
 
     internal companion object {
@@ -19,36 +18,48 @@ internal data class FetchRange(
 }
 
 internal data class Period(
-    val month: Int,
-    val year: Int
+    val date: Calendar
 ) : Comparable<Period> {
 
     val previous: Period
         get() {
-            val year = if (month == Calendar.JANUARY) year - 1 else year
-            val month = if (month == Calendar.JANUARY) Calendar.DECEMBER else month - 1
-            return Period(month, year)
+            val previousDate = date.clone() as Calendar
+            previousDate.add(Calendar.WEEK_OF_YEAR, -2)
+            return Period(previousDate)
         }
 
     val next: Period
         get() {
-            val year = if (month == Calendar.DECEMBER) year + 1 else year
-            val month = if (month == Calendar.DECEMBER) Calendar.JANUARY else month + 1
-            return Period(month, year)
+            val nextDate = date.clone() as Calendar
+            nextDate.add(Calendar.WEEK_OF_YEAR, 4)
+            return Period(nextDate)
         }
 
-    val startDate: Calendar = newDate(year, month, dayOfMonth = 1)
-    val endDate: Calendar = startDate.withDayOfMonth(startDate.lengthOfMonth).atEndOfDay
+    val startDate: Calendar
+        get() {
+            val start = date.clone() as Calendar
+            start.set(Calendar.DAY_OF_WEEK, start.firstDayOfWeek)
+            start.set(Calendar.HOUR_OF_DAY, 0)
+            start.set(Calendar.MINUTE, 0)
+            start.set(Calendar.SECOND, 0)
+            start.set(Calendar.MILLISECOND, 0)
+            return start
+        }
+
+    val endDate: Calendar
+        get() {
+            val end = date.clone() as Calendar
+            end.set(Calendar.DAY_OF_WEEK, end.firstDayOfWeek)
+            end.add(Calendar.WEEK_OF_YEAR, 1)
+            end.add(Calendar.MILLISECOND, -1)
+            return end
+        }
 
     override fun compareTo(other: Period): Int {
-        return when {
-            year < other.year -> -1
-            year > other.year -> 1
-            else -> month.compareTo(other.month)
-        }
+        return date.compareTo(other.date)
     }
 
     internal companion object {
-        fun fromDate(date: Calendar): Period = Period(month = date.month, year = date.year)
+        fun fromDate(date: Calendar): Period = Period(date)
     }
 }
