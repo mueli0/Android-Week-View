@@ -574,13 +574,19 @@ internal class ViewState {
         dateRangeWithStartPixels += dateRange.zip(startPixels)
     }
 
-    fun createDateRange(
-        startDate: Calendar,
-        visibleDays: Int = numberOfVisibleDays
-    ) = if (isLtr) {
-        (0 until visibleDays).map { startDate.plusDays(it) }
-    } else {
-        (0 until visibleDays).map { startDate.minusDays(it) }
+    private fun createDateRange(firstVisibleDate: Calendar): List<Calendar> {
+        val dateRange = mutableListOf<Calendar>()
+        val calendar = firstVisibleDate.clone() as Calendar
+    
+        while (dateRange.size < viewState.numberOfVisibleDays) {
+            if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY &&
+                calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                dateRange.add(calendar.clone() as Calendar)
+            }
+            calendar.add(Calendar.DATE, 1)
+        }
+    
+        return dateRange
     }
 
     fun onSizeChanged(width: Int, height: Int) {
