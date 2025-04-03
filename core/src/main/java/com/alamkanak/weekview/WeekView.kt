@@ -119,7 +119,8 @@ class WeekView @JvmOverloads constructor(
         performPendingScroll()
         updateViewState()
         refreshEvents()
-        performRendering(canvas)
+        val dateRange = updateDateRange()
+        performRendering(canvas, dateRange)
     }
 
     private fun performPendingScroll() {
@@ -143,11 +144,11 @@ class WeekView @JvmOverloads constructor(
         pagingAdapter?.dispatchLoadRequest()
     }
 
-    private fun performRendering(canvas: Canvas) {
-        for (renderer in renderers) {
-            renderer.render(canvas)
-        }
+    private fun performRendering(canvas: Canvas, dateRange: List<Calendar>) {
+    for (renderer in renderers) {
+        renderer.render(canvas, dateRange)
     }
+}
 
     override fun onSaveInstanceState(): Parcelable? {
         val superState = super.onSaveInstanceState()
