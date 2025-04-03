@@ -176,14 +176,14 @@ class WeekView @JvmOverloads constructor(
     private fun updateDateRange(): List<Calendar> {
         val daysScrolled = viewState.currentOrigin.x / viewState.dayWidth
         val delta = daysScrolled.roundToInt() * (-1)
-
+    
         val firstVisibleDate = if (viewState.isLtr) {
             today().plusDays(delta)
         } else {
             today().minusDays(delta)
         }
-
-        val dateRange = viewState.createDateRange(firstVisibleDate)
+    
+        val dateRange = createDateRange(firstVisibleDate)
         return dateRange.validate(viewState = viewState)
     }
 
